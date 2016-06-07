@@ -4,6 +4,10 @@ import boto3
 
 import zones
 
+_FMT_SPEC = '{:50}{:6}{:<4}{:<10}{:<}'
+_PRINT_ORDER = ['SOA', 'NS', 'A', 'CNAME', 'PTR', 'AAAA', 'SPF', 'SRV', 'TXT']
+_HEADERS = ['Name', 'Type', 'TTL', 'Weight', 'Value']
+
 
 def _get_rrset(zone_id):
     '''Retrun Resource Record Set for a zone.'''
@@ -23,11 +27,12 @@ def _rrset_format(rr):
         info = rr['ResourceRecords'].pop()['Value']
         if len(rr['ResourceRecords']):
             for _ in rr['ResourceRecords']:
-                info += '\n{:66}{}'.format('', _['Value'])
+                info += '\n{:70}{}'.format('', _['Value'])
         ttl = rr['TTL']
-    return "{:50}{:6}{:<10}{:<}".format(
+    return _FMT_SPEC.format(
         rr['Name'],
         rr['Type'],
+        rr.get('Weight', ''),
         ttl,
         info)
 
@@ -40,8 +45,8 @@ def _pprint_rrset(rrset):
             rrtypes[rr['Type']] = []
         rrtypes[rr['Type']].append(rr)
 
-    PRINT_ORDER = ['SOA', 'NS', 'A', 'CNAME', 'PTR', 'AAAA', 'SPF', 'SRV', 'TXT']
-    for _type in PRINT_ORDER:
+    print(_FMT_SPEC.format(*_HEADERS))
+    for _type in _PRINT_ORDER:
         if _type in rrtypes:
             for _ in rrtypes[_type]:
                 print(_rrset_format(_))
