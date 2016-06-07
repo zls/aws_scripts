@@ -6,7 +6,7 @@ import zones
 
 _FMT_SPEC = '{:50}{:6}{:<4}{:<10}{:<}'
 _PRINT_ORDER = ['SOA', 'NS', 'A', 'CNAME', 'PTR', 'AAAA', 'SPF', 'SRV', 'TXT']
-_HEADERS = ['Name', 'Type', 'TTL', 'Weight', 'Value']
+_HEADERS = ['Name', 'Type', 'Wt.', 'TTL', 'Value']
 
 
 def _get_rrset(zone_id):
@@ -60,3 +60,6 @@ def pprint(args):
     else:
         print("Could not find zone {0}".format(args.zone))
 
+
+def set_weight(args):
+    print(args)
