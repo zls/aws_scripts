@@ -21,7 +21,7 @@ def get_zones():
     return ret['HostedZones']
 
 
-def pprint(args):
+def pprint():
     '''Print all zones to console.'''
     for zone in get_zones():
         print(zone['Name'], zone['Id'])

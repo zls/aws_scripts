@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import cmd
+from cmd import cmd_cli
 
 if __name__ == '__main__':
-    cmd.parse_args()
+    cmd_cli()

@@ -52,13 +52,13 @@ def _pprint_rrset(rrset):
                 print(_rrset_format(_))
 
 
-def pprint(args):
+def pprint(zone):
     '''Print resource record set for a zone to the console.'''
-    zid = zones.find_zone_id(args.zone)
+    zid = zones.find_zone_id(zone)
     if zid:
         _pprint_rrset(_get_rrset(zid))
     else:
-        print("Could not find zone {0}".format(args.zone))
+        print("Could not find zone {0}".format(zone))
 
 
 def set_weight(args):

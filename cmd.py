@@ -1,34 +1,38 @@
 from __future__ import print_function
 
-import argparse
+import click
 
 import zones
 import rrsets
 
+@click.group()
+def cmd_cli():
+    pass
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers()
+@cmd_cli.group(name='set')
+def cmd_set():
+    pass
 
-    sp_list = subparsers.add_parser('list')
-    sp_list.set_defaults(func=_parse_list)
+@cmd_set.command(name='weight')
+@click.option('--append-domain', '-a')
+@click.argument('weight', type=click.INT)
+@click.argument('zone')
+@click.argument('names', nargs=-1)
+def cmd_set_weight():
+    pass
 
-    args, remain = parser.parse_known_args()
-    args.func(remain)
+@cmd_cli.group(name='list')
+def cmd_list():
+    pass
 
+@cmd_list.command(name='zones')
+def cmd_list_zones():
+    zones.pprint()
 
-def _parse_list(args):
-    '''Pasrse further list arguments.'''
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers()
+@cmd_list.command(name='rrsets')
+@click.argument('zone')
+def cmd_list_rrset(zone):
+    rrsets.pprint(zone)
 
-    sp_zone = subparsers.add_parser('zones')
-    sp_zone.set_defaults(func=zones.pprint)
-
-    sp_rrset = subparsers.add_parser('rrset')
-    sp_rrset.add_argument('zone')
-    sp_rrset.set_defaults(func=rrsets.pprint)
-
-    _args = parser.parse_args(args)
-    _args.func(_args)
-
+if __name__ == '__main__':
+    cmd_cli()
