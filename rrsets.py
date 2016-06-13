@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import boto3
+import pprint as pretty_print
 
 import zones
 
@@ -9,8 +10,8 @@ _PRINT_ORDER = ['SOA', 'NS', 'A', 'CNAME', 'PTR', 'AAAA', 'SPF', 'SRV', 'TXT']
 _HEADERS = ['Name', 'Type', 'Wt.', 'TTL', 'Value']
 
 
-def _get_rrset(zone_id):
-    '''Retrun Resource Record Set for a zone.'''
+def get_rrset(zone_id):
+    '''Return Resource Record Set for a zone.'''
     client = boto3.client('route53')
     ret = client.list_resource_record_sets(HostedZoneId=zone_id)
     return ret['ResourceRecordSets']
@@ -52,14 +53,33 @@ def _pprint_rrset(rrset):
                 print(_rrset_format(_))
 
 
-def pprint(zone):
+def pprint(zone, verbose):
     '''Print resource record set for a zone to the console.'''
     zid = zones.find_zone_id(zone)
     if zid:
-        _pprint_rrset(_get_rrset(zid))
+        info = get_rrset(zid)
+        if verbose:
+            pretty_print.pprint(info)
+        else:
+            _pprint_rrset(info)
     else:
         print("Could not find zone {0}".format(zone))
 
 
-def set_weight(args):
-    print(args)
+def change_batch(chgs):
+    cb = {}
+    cb['Changes'] = chgs
+    return cb
+
+
+def apply_changebatch(zid, cb):
+    '''Update route 53 zone.'''
+    client = boto3.client('route53')
+    try:
+        resp = client.change_resource_record_sets(
+            HostedZoneId=zid,
+            ChangeBatch=cb)
+    except Exception as err:
+        print(cb)
+        print(err)
+    return resp
